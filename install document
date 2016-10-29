@@ -1,0 +1,47 @@
+1. this is to set root password:
+   sudo passwd
+
+2. install ssh command:
+    sudo apt-get install openssh-server
+
+3.
+    sudo addgroup hadoop  
+    sudo adduser -ingroup hadoop hadoop
+
+4.   输入：sudo gedit /etc/sudoers
+
+ 回车，打开sudoers文件 
+ 给hadoop用户赋予和root用户同样的权限 
+
+5. install git.
+sudo apt-get install git 
+
+git config --global user.name "michaeltou"
+git config --global user.email toudf64_43jhv@163.com
+
+
+mkdir ..
+cd ..
+git init
+touch README
+git add README
+git commit -m 'first commit'
+git remote add origin git@github.com:xxx/xxxxx.git
+git push -u origin master
+
+
+5、安装ssh
+
+sudo apt-get install openssh-server
+  
+安装完成后，启动服务
+
+sudo /etc/init.d/ssh start
+ 
+查看服务是否正确启动：ps -e | grep ssh
+ 
+
+设置免密码登录，生成私钥和公钥
+
+ssh-keygen -t rsa -P ""
+
