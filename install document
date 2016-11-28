@@ -128,7 +128,8 @@ vi /etc/hosts
  192.168.0.62 hadoop2
  192.168.0.63 hadoop3
 
-
+ 
+===========hadoop configuration start===============
  
 14. 在 Hadoop 目录下创建子目录
 
@@ -136,4 +137,380 @@ $cd /usr/local/hadoop/
 $mkdir tmp
 $mkdir name
 $mkdir data
+
+ 15. config  hodoop/etc/hadoop/hadoop-env.sh, yarn-env.sh , mainly config java.
+    only check these 2 files, no need to add more.
+export JAVA_HOME=/usr/lib/java/jdk1.7.0_55
+export PATH=$PATH:/app/hadoop/hadoop-2.2.0/bin
+
+2.1.3 配置 hadoop-env.sh
+1. 打开配置文件 hadoop-env.sh
+$cd /app/hadoop/hadoop-2.2.0/etc/hadoop
+$sudo vi hadoop-env.sh
+第 14 页 共 28 页
+出自石山园,博客地址:http://www.cnblogs.com/shishanyuan2. 加入配置内容,设置 JAVA_HOME 和 PATH 路径
+export JAVA_HOME=/usr/lib/java/jdk1.7.0_55
+export PATH=$PATH:/app/hadoop/hadoop-2.2.0/bin
+3. 编译配置文件 hadoop-env.sh,并确认生效
+$source hadoop-env.sh
+$hadoop version
+2.1.4 配置 yarn-env.sh
+1. 在/app/hadoop/hadoop-2.2.0/etc/hadoop 打开配置文件 yarn-env.sh
+$cd /app/hadoop/hadoop-2.2.0/etc/hadoop
+$sudo vi yarn-env.sh
+第 15 页 共 28 页
+出自石山园,博客地址:http://www.cnblogs.com/shishanyuan2. 加入配置内容,设置 JAVA_HOME 路径
+export JAVA_HOME=/usr/lib/java/jdk1.7.0_55
+
+
+
+ 16. $sudo vi core-site.xml
+
+在配置文件中,按照如下内容进行配置
+<configuration>
+	<property>
+		<name>fs.default.name</name>
+		<value>hdfs://michaelhost:9000</value>
+	</property>
+	<property>
+		<name>fs.defaultFS</name>
+		<value>hdfs://michaelhost:9000</value>
+	</property>
+	<property>
+		<name>io.file.buffer.size</name>
+		<value>131072</value>
+	</property>
+	<property>
+		<name>hadoop.tmp.dir</name>
+		<value>file:/usr/local/hadoop/tmp</value>
+		<description>Abase for other temporary directories.</description>
+	</property>
+	<property>
+		<name>hadoop.proxyuser.hduser.hosts</name>
+		<value>*</value>
+	</property>
+	<property>
+		<name>hadoop.proxyuser.hduser.groups</name>
+		<value>*</value>
+	</property>
+</configuration>
+
+
+17. 配置 hdfs-site.xml
+ 
+$sudo vi hdfs-site.xml
+
+在配置文件中,按照如下内容进行配置
+<configuration>
+	<property>
+		<name>dfs.namenode.secondary.http-address</name>
+		<value>michaelhost:9001</value>
+	</property>
+	<property>
+		<name>dfs.namenode.name.dir</name>
+		<value>file:/usr/local/hadoop/name</value>
+	</property>
+	<property>
+		<name>dfs.datanode.data.dir</name>
+		<value>file:/usr/local/hadoop/data</value>
+	</property>
+	<property>
+		<name>dfs.replication</name>
+		<value>2</value>
+	</property>
+	<property>
+		<name>dfs.webhdfs.enabled</name>
+		<value>true</value>
+	</property>
+</configuration>
+
+
+
+18.
+配置 mapred-site.xml
+ 默认情况下不存在 mapred-site.xml 文件,可以从模板拷贝一份
+$cp mapred-site.xml.template mapred-site.xml
+
+<configuration>
+ 
+	<property>
+		<name>mapreduce.framework.name</name>
+		<value>yarn</value>
+	</property>
+	<property>
+		<name>mapreduce.jobhistory.address</name>
+		<value>michaelhost:10020</value>
+	</property>
+	<property>
+		<name>mapreduce.jobhistory.webapp.address</name>
+		<value>michaelhost:19888</value>
+	</property>
+ 
+
+</configuration>
+
+
+
+19. 配置 yarn-site.xml
+1. 使用如下命令打开 yarn-site.xml 配置文件
+$sudo vi yarn-site.xml
+
+在配置文件中,按照如下内容进行配置
+<configuration>
+	<property>
+		<name>yarn.nodemanager.aux-services</name>
+		<value>mapreduce_shuffle</value>
+	</property>
+	<property>
+		<name>yarn.nodemanager.aux-services.mapreduce.shuffle.class</name>
+		<value>org.apache.hadoop.mapred.ShuffleHandler</value>
+	</property>
+	<property>
+		<name>yarn.resourcemanager.address</name>
+		<value>michaelhost:8032</value>
+	</property>
+	<property>
+		<name>yarn.resourcemanager.scheduler.address</name>
+		<value>michaelhost:8030</value>
+	</property>
+	<property>
+		<name>yarn.resourcemanager.resource-tracker.address</name>
+		<value>michaelhost:8031</value>
+	</property>
+	<property>
+		<name>yarn.resourcemanager.admin.address</name>
+		<value>michaelhost:8033</value>
+	</property>
+	<property>
+		<name>yarn.resourcemanager.webapp.address</name>
+		<value>michaelhost:8088</value>
+	</property>
+</configuration>
+
+
+
+20.
+
+配置 Slaves 文件
+使用 $sudo vi slaves 打开从节点配置文件,在文件中加入
+hadoop1
+hadoop2
+hadoop3
+
+
+21
+验证hadoop
+ validate started method:
+验证方法一：用"jps"命令 用jps查看进程。
+
+验证方式二：用"hadoop dfsadmin -report"
+　　用这个命令可以查看Hadoop集群的状态。
+　　Master服务器的状态：
+
+
+ 网页查看集群
+　　1）    http://192.168.0.107:50070/dfshealth.html#tab-overview
+
+
+
+===========hadoop configuration end===============
+
+
+
+===========spark configuration start ===============
+
+ 
+
+22. 配置 conf/slaves
+打开配置文件 conf/slaves
+$cd /app/hadoop/spark-1.1.0/conf
+$sudo vi slaves
+
+加入 slave 配置节点
+hadoop1
+hadoop2
+hadoop3
+
+
+23.配置 conf/spark-env.sh
+
+$cd /app/hadoop/spark-1.1.0/conf
+$cp spark-env.sh.template spark-env.sh
+$sudo vi spark-env.sh
+
+ add following config:
+
+export JAVA_HOME=/usr/local/jdk
+export SPARK_MASTER_IP=hadoop1
+export SPARK_MASTER_PORT=7077
+export SPARK_WORKER_CORES=1
+export SPARK_WORKER_INSTANCES=1
+export SPARK_WORKER_MEMORY=512M
+
+24.
+
+2.2.1 格式化 NameNode
+$cd /app/hadoop/hadoop-2.2.0/
+$./bin/hdfs namenode -format
+
+
+
+启动 HDFS
+$cd /app/hadoop/hadoop-2.2.0/sbin
+$./start-dfs.sh
+通过 jps 观察启动情况,在 hadoop1 上面运行的进程有: NameNode、 SecondaryNameNode
+和 DataNode
+hadoop2 和 hadoop3 上面运行的进程有:NameNode 和 DataNode
+25
+
+ 上传数据到 HDFS 中
+把 hadoop 配置文件 core-site.xml 文件作为测试文件上传到 HDFS 中
+$hadoop fs -mkdir -p /user/hadoop/testdata
+ 
+$hadoop fs -put /usr/local/hadoop/etc/hadoop/core-site.xml /user/hadoop/testdata
+
+26 启动 Spark
+
+
+$cd /app/hadoop/spark-1.1.0/sbin
+$./start-all.sh
+
+
+
+27. 
+
+启动 Spark-shell
+在 spark 客户端(这里在 hadoop1 节点),使用 spark-shell 连接集群
+$cd /app/hadoop/spark-1.1.0/bin
+$./spark-shell --master spark://hadoop1:7077 --executor-memory 512m --driver-memory 500m
+
+
+spark-shell --master spark://michaelhost:7077 --executor-memory 512m --driver-memory 500m
+
+spark-shell --master spark://yunmo001host:7077 --executor-memory 512m --driver-memory 500m
+
+28  运行 WordCount 脚本
+下面就是 WordCount 的执行脚本,该脚本是 scala 编写,以下为一行实现:
+scala>sc.textFile("hdfs://hadoop1:9000/user/hadoop/testdata/core-site.xml").flatMap(_.split(" ")).map(x=>(x,1)).reduceByKey(_+_).map(x=>(x._2,x._1)).sortByKey(false).map(x=>(x._2,x._1)).take(10)
+
+
+sc.textFile("hdfs://michaelhost:9000/user/hadoop/testdata/core-site.xml").flatMap(_.split(" ")).map(x=>(x,1)).reduceByKey(_+_).map(x=>(x._2,x._1)).sortByKey(false).map(x=>(x._2,x._1)).take(10)
+ 
+
+
+为了更好看到实现过程,下面将逐行进行实现:
+scala>val rdd=sc.textFile("hdfs://hadoop1:9000/user/hadoop/testdata/core-site.xml")
+scala>rdd.cache()
+scala>val wordcount=rdd.flatMap(_.split(" ")).map(x=>(x,1)).reduceByKey(_+_)
+scala>wordcount.take(10)
+scala>val wordsort=wordcount.map(x=>(x._2,x._1)).sortByKey(false).map(x=>(x._2,x._1))
+scala>wordsort.take(10)
+ 
+
+词频统计结果如下:
+Array[(String, Int)] = Array(("",100), (the,7), (</property>,6), (<property>,6), (under,3),
+(in,3), (License,3), (this,2), (-->,2), (file.,2))
+
+
+
+
+29. 
+ 观察运行情况
+通过 http://hadoop1:8080 查看 Spark 运行情况,可以看到 Spark 为 3 个节点,每个节点各为
+1 个内核/512M 内存,客户端分配 3 个核,每个核有 512M 内存。
+ 
+ 通过点击客户端运行任务 ID,可以看到该任务在 hadoop2 和 hadoop3 节点上运行,在
+hadoop1 上并没有运行,主要是由于 hadoop1 为 NameNode 和 Spark 客户端造成内存占用
+过大造成
+30.
+   使用 Spark-submit 测试
+从 Spark1.0.0 开始,Spark 提供了一个易用的应用程序部署工具 bin/spark-submit,可以
+完成 Spark 应用程序在 local、Standalone、YARN、Mesos 上的快捷部署。该工具语法及参
+数说明如下:
+Usage: spark-submit [options] <app jar | python file> [app options]
+Options:
+--master MASTER_URL
+spark://host:port, mesos://host:port, yarn, or local.
+--deploy-mode DEPLOY_MODE driver 运行之处,client 运行在本机,cluster 运行在集群
+--class CLASS_NAME 应用程序包的要运行的 class
+--name NAME 应用程序名称
+--jars JARS 用逗号隔开的 driver 本地 jar 包列表以及 executor 类路径
+--py-files PY_FILES 用逗号隔开的放置在 Python 应用程序
+PYTHONPATH 上的.zip, .egg, .py 文件列表
+--files FILES 用逗号隔开的要放置在每个 executor 工作目录的文件列表
+--properties-file FILE 设置应用程序属性的文件放置位置,默认是 conf/spark-defaults.conf
+--driver-memory MEM driver 内存大小,默认 512M
+--driver-java-options driver 的 java 选项
+--driver-library-path driver 的库路径 Extra library path entries to pass to the driver
+--driver-class-path
+--executor-memory MEM
+ 
+driver 的类路径,用--jars 添加的 jar 包会自动包含在类路径里
+executor 内存大小,默认 1G
+ Spark standalone with cluster deploy mode only:
+--driver-cores NUM driver 使用内核数,默认为 1
+--supervise 如果设置了该参数,driver 失败是会重启
+Spark standalone and Mesos only:
+--total-executor-cores NUM
+executor 使用的总核数
+YARN-only:
+--executor-cores NUM 每个 executor 使用的内核数,默认为 1
+--queue QUEUE_NAME 提交应用程序给哪个 YARN 的队列,默认是 default 队列
+--num-executors NUM 启动的 executor 数量,默认是 2 个
+--archives ARCHIVES 被每个 executor 提取到工作目录的档案列表,用逗号隔开
+
+
+
+33.
+
+运行脚本 1
+该脚本为 Spark 自带例子,在该例子中个计算了圆周率π的值,以下为执行脚本:
+$cd /app/hadoop/spark-1.1.0/bin
+$./spark-submit --master spark://hadoop1:7077 --class org.apache.spark.examples.SparkPi
+--executor-memory 512m ../lib/spark-examples-1.1.0-hadoop2.2.0.jar 200
+
+
+spark-submit --master spark://michaelhost:7077 --class org.apache.spark.examples.SparkPi --executor-memory 512m ../lib/spark-examples-1.1.0-hadoop2.2.0.jar 200
+
+
+
+参数说明(详细可以参考上面的参数说明):
+
+--master Master 所在地址,可以有 Mesos、 Spark、 YARN 和 Local 四种,在这里为 Spark
+Standalone 集群,地址为 spark://hadoop1:7077
+ --class 应用程序调用的类名,这里为 org.apache.spark.examples.SparkPi
+ --executor-memory 每个 executor 所分配的内存大小,这里为 512M
+ 执行 jar 包 这里是../lib/spark-examples-1.1.0-hadoop2.2.0.jar
+ 分片数目 这里数目为 200
+
+3.2.2 观察运行情况
+通过观察 Spark 集群有 3 个 Worker 节点和正在运行的 1 个应用程序,每个 Worker 节点
+为 1 内核/512M 内存。由于没有指定应用程序所占内核数目,则该应用程序占用该集群所有 3
+个内核,并且每个节点分配 512M 内存。
+根据每个节点负载情况,每个节点运行 executor 并不相同,其中 hadoop1 的 executor 数目
+为 0。而 hadoop3 执行 executor 数为 10 个,其中 5 个 EXITED 状态,5 个 KILLED 状态。
+
+
+34. 运行脚本 2
+该脚本为 Spark 自带例子,在该例子中个计算了圆周率π的值,区别脚本 1 这里指定了每个
+executor 内核数据,以下为执行脚本:
+$cd /app/hadoop/spark-1.1.0/bin
+
+出自石山园,博客地址:http://www.cnblogs.com/shishanyuan$./spark-submit --master spark://hadoop1:7077 --class org.apache.spark.examples.SparkPi
+--executor-memory 512m --total-executor-cores 2 ../lib/spark-examples-1.1.0-hadoop2.2.0.jar 200
+参数说明(详细可以参考上面的参数说明):
+
+--master Master 所在地址,可以有 Mesos、 Spark、 YARN 和 Local 四种,在这里为 Spark
+Standalone 集群,地址为 spark://hadoop1:7077
+ --class 应用程序调用的类名,这里为 org.apache.spark.examples.SparkPi
+ --executor-memory 每个 executor 所分配的内存大小,这里为 512M
+ --total-executor-cores 2 每个 executor 分配的内核数
+ 执行 jar 包 这里是../lib/spark-examples-1.1.0-hadoop2.2.0.jar
+ 分片数目 这里数目为 200
+3.2.4 观察运行情况
+通过观察 Spark 集群有 3 个 Worker 节点和正在运行的 1 个应用程序,每个 Worker 节点
+为 1 内核/512M 内存。由于指定应用程序所占内核数目为 2,则该应用程序使用该集群所有 2
+个内核。
+ 
+
 
