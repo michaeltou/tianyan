@@ -389,6 +389,8 @@ spark-shell --master spark://michaelhost:7077 --executor-memory 512m --driver-me
 
 spark-shell --master spark://yunmo001host:7077 --executor-memory 512m --driver-memory 500m
 
+spark-shell --master spark://yunmo001host:7078 --executor-memory 512m --driver-memory 1000m
+
 28  运行 WordCount 脚本
 下面就是 WordCount 的执行脚本,该脚本是 scala 编写,以下为一行实现:
 scala>sc.textFile("hdfs://hadoop1:9000/user/hadoop/testdata/core-site.xml").flatMap(_.split(" ")).map(x=>(x,1)).reduceByKey(_+_).map(x=>(x._2,x._1)).sortByKey(false).map(x=>(x._2,x._1)).take(10)
@@ -396,6 +398,8 @@ scala>sc.textFile("hdfs://hadoop1:9000/user/hadoop/testdata/core-site.xml").flat
 
 sc.textFile("hdfs://michaelhost:9000/user/hadoop/testdata/core-site.xml").flatMap(_.split(" ")).map(x=>(x,1)).reduceByKey(_+_).map(x=>(x._2,x._1)).sortByKey(false).map(x=>(x._2,x._1)).take(10)
  
+
+sc.textFile("hdfs://yunmo001host:9000/user/hadoop/testdata/core-site.xml").flatMap(_.split(" ")).map(x=>(x,1)).reduceByKey(_+_).map(x=>(x._2,x._1)).sortByKey(false).map(x=>(x._2,x._1)).take(10)
 
 
 为了更好看到实现过程,下面将逐行进行实现:
@@ -472,6 +476,8 @@ $./spark-submit --master spark://hadoop1:7077 --class org.apache.spark.examples.
 
 spark-submit --master spark://michaelhost:7077 --class org.apache.spark.examples.SparkPi --executor-memory 512m ../lib/spark-examples-1.1.0-hadoop2.2.0.jar 200
 
+
+spark-submit --master spark://michaelhost:7077 --class org.apache.spark.examples.SparkPi --executor-memory 512m ../lib/spark-examples-1.1.0-hadoop2.2.0.jar 200
 
 
 参数说明(详细可以参考上面的参数说明):
